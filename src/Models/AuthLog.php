@@ -1,0 +1,40 @@
+<?php
+
+namespace Shamarkellman\AuthLogger\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class AuthLog extends Model
+{
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'auth_log';
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = ['authenticatable_id', 'authenticatable_type'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'login_at' => 'datetime',
+        'logout_at' => 'datetime',
+    ];
+
+    /**
+     * Get the authenticatable entity that the authentication log belongs to.
+     */
+    public function authenticatable()
+    {
+        return $this->morphTo();
+    }
+}
