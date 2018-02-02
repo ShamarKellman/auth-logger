@@ -51,15 +51,19 @@ class LogFailedLogin
             'event_type' => "FAILED LOGIN",
         ]);
 
-        $user->authentications()->save($authLog);
+        if($user) {
+            $user->authentications()->save($authLog);
 
-        $attempts = $user->authentications()->where('event_type', 'FAILED LOGIN')
-            ->where('created_at', '<', Carbon::now()->toDateTimeString())
-            ->where('created_at', '>', Carbon::now()->subMinutes(config('auth-logger.failed_count_range', 10))->toDateTimeString())
-            ->count();
+            $attempts = $user->authentications()->where('event_type', 'FAILED LOGIN')
+                ->where('created_at', '<', Carbon::now()->toDateTimeString())
+                ->where('created_at', '>', Carbon::now()->subMinutes(config('auth-logger.failed_count_range', 10))->toDateTimeString())
+                ->count();
 
-        if ($attempts >= config('auth-logger.number_of_attempts', 5) && config('auth-logger.notify')) {
-            $user->notify(new FailedSigninAttempts($authLog));
+            if ($attempts >= config('auth-logger.number_of_attempts', 5) && config('auth-logger.notify')) {
+                $user->notify(new FailedSigninAttempts($authLog));
+            }
+        } else {
+            $authLog->save();
         }
     }
 }
