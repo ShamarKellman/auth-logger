@@ -41,7 +41,7 @@ class LogFailedLogin
 
         $location = new Location();
         $position = $location->get($ip);
-        $country = $position->countryName ?? $position->countryCode;
+        $country = $position->countryName ?? optional($position)->countryCode ?? "Unknown";
 
         $authLog = new AuthLog([
             'ip_address' => $ip,
