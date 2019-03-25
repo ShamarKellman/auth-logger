@@ -41,7 +41,7 @@ class LogSuccessfulLogin
 
         $location = new Location();
         $position = $location->get($ip);
-        $country = $position->countryName ?? $position->countryCode;
+        $country = $position->countryName ?? optional($position)->countryCode ?? "Unknown";
 
         $known = $user->authentications()->whereIpAddress($ip)->whereUserAgent($userAgent)->first();
 
