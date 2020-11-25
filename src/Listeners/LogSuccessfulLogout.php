@@ -37,22 +37,24 @@ class LogSuccessfulLogout
     public function handle(Logout $event)
     {
         $user = $event->user;
-        $ip = $this->request->ip();
+        if(isset($user)) {
+            $ip = $this->request->ip();
 
-        $location = new Location();
-        $position = $location->get($ip);
-        $country = $position->countryName ?? optional($position)->countryCode ?? "Unknown";
+            $location = new Location();
+            $position = $location->get($ip);
+            $country = $position->countryName ?? optional($position)->countryCode ?? "Unknown";
 
-        $userAgent = $this->request->userAgent();
-        $authLog = new AuthLog([
-            'ip_address' => $ip,
-            'is_successful' => true,
-            'location' => $country,
-            'user_agent' => $userAgent,
-            'logout_at' => Carbon::now(),
-            'event_type' => "LOGOUT",
-        ]);
+            $userAgent = $this->request->userAgent();
+            $authLog = new AuthLog([
+                'ip_address' => $ip,
+                'is_successful' => true,
+                'location' => $country,
+                'user_agent' => $userAgent,
+                'logout_at' => Carbon::now(),
+                'event_type' => "LOGOUT",
+            ]);
 
-        $user->authentications()->save($authLog);
+            $user->authentications()->save($authLog);
+        }
     }
 }
