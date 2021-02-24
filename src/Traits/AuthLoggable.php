@@ -1,15 +1,18 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Traits;
+namespace ShamarKellman\AuthLogger\Traits;
 
-use Shamarkellman\AuthLogger\Models\AuthLog;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use ShamarKellman\AuthLogger\Enums\EventType;
+use ShamarKellman\AuthLogger\Models\AuthLog;
 
 trait AuthLoggable
 {
     /**
      * Get the entity's authentications.
      */
-    public function authentications()
+    public function authentications(): MorphMany
     {
         return $this->morphMany(AuthLog::class, 'authenticatable')->latest('login_at');
     }
@@ -19,48 +22,90 @@ trait AuthLoggable
      *
      * @return array
      */
-    public function notifyAuthenticationLogVia()
+    public function notifyAuthenticationLogVia(): array
     {
         return ['mail'];
     }
 
     /**
      * Get the entity's last login at.
+     * @param  Builder  $query
+     * @return Builder
      */
-    public function lastLoginAt()
+    public function scopeLastLoginAt(Builder $query): Builder
     {
-        return optional($this->authentications()->first())->login_at;
+        return $query->addSelect(['last_login_at' => AuthLog::query()->select('login_at')
+            ->whereColumn('authenticatable_id', "{$this->table}.id")
+            ->where('authenticatable_type', $this->getMorphClass())
+            ->where('event_type', EventType::LOGIN)
+            ->latest('login_at')
+            ->take(1)
+        ])->withCasts(['last_login_at' => 'datetime']);
     }
 
     /**
      * Get the entity's last login ip address.
+     * @param  Builder  $query
+     * @return Builder
      */
-    public function lastLoginIp()
+    public function scopeLastLoginIp(Builder $query): Builder
     {
-        return optional($this->authentications()->first())->ip_address;
+        return $query->addSelect(['last_login_ip_address' => AuthLog::query()->select('ip_address')
+            ->whereColumn('authenticatable_id', "{$this->table}.id")
+            ->where('authenticatable_type', $this->getMorphClass())
+            ->where('event_type', EventType::LOGIN)
+            ->latest('login_at')
+            ->take(1)
+        ]);
     }
 
     /**
      * Get the entity's last login ip address.
+     * @param  Builder  $query
+     * @return Builder
      */
-    public function lastLoginLocation()
+    public function scopeLastLoginLocation(Builder $query): Builder
     {
-        return optional($this->authentications()->first())->location;
+        return $query->addSelect(['last_login_location' => AuthLog::query()->select('location')
+            ->whereColumn('authenticatable_id', "{$this->table}.id")
+            ->where('authenticatable_type', $this->getMorphClass())
+            ->where('event_type', EventType::LOGIN)
+            ->latest('login_at')
+            ->take(1)
+        ]);
     }
 
     /**
      * Get the entity's previous login at.
+     * @param  Builder  $query
+     * @return Builder
      */
-    public function previousLoginAt()
+    public function scopePreviousLoginAt(Builder $query): Builder
     {
-        return optional($this->authentications()->skip(1)->first())->login_at;
+        return $query->addSelect(['previous_login_at' => AuthLog::query()->select('login_at')
+            ->whereColumn('authenticatable_id', "{$this->table}.id")
+            ->where('authenticatable_type', $this->getMorphClass())
+            ->where('event_type', EventType::LOGIN)
+            ->latest('login_at')
+            ->skip(1)
+            ->take(1)
+        ])->withCasts(['previous_login_at' => 'datetime']);
     }
 
     /**
      * Get the entity's previous login at.
+     * @param  Builder  $query
+     * @return Builder
      */
-    public function previousLoginLocation()
+    public function scopePreviousLoginLocation(Builder $query): Builder
     {
-        return optional($this->authentications()->skip(1)->first())->location;
+        return $query->addSelect(['previous_login_location' => AuthLog::query()->select('location')
+            ->whereColumn('authenticatable_id', "{$this->table}.id")
+            ->where('authenticatable_type', $this->getMorphClass())
+            ->where('event_type', EventType::LOGIN)
+            ->orderBy('login_at', 'desc')
+            ->skip(1)
+            ->take(1)
+        ]);
     }
 }

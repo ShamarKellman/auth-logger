@@ -7,8 +7,8 @@ Laravel package to log all authentication events.
 Requirements
 ============
 
-* PHP >= 7.0
-* Laravel >= 5.5
+* PHP >= 7.2.5
+* Laravel 6.x, 7.x, 8.x
 
 Installation
 ============
@@ -67,7 +67,7 @@ class User extends Authenticatable
 TODO
 =======
 - [ ] Log authenticated, authenticating
-- [ ] Tests
+- [x] Tests
 
 
 Credits

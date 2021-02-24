@@ -1,11 +1,11 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Listeners;
+namespace ShamarKellman\AuthLogger\Listeners;
 
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Http\Request;
-use Shamarkellman\AuthLogger\Location\Location;
-use Shamarkellman\AuthLogger\Models\AuthLog;
+use ShamarKellman\AuthLogger\Facades\Location;
+use ShamarKellman\AuthLogger\Models\AuthLog;
 
 class LogLockout
 {
@@ -29,16 +29,15 @@ class LogLockout
      *
      * @param Lockout $event
      * @return void
-     * @throws \Shamarkellman\AuthLogger\Exceptions\DriverDoesNotExistException
+     * @throws \ShamarKellman\AuthLogger\Exceptions\DriverDoesNotExistException
      */
-    public function handle(Lockout $event)
+    public function handle(Lockout $event): void
     {
         $ip = $this->request->ip();
         $userAgent = $this->request->userAgent();
 
-        $location = new Location();
-        $position = $location->get($ip);
-        $country = $position->countryName ?? $position->countryCode;
+        $position = Location::get($ip);
+        $country = $position->countryName ?? $position->countryCode ?? "UNKNOWN";
 
         $authLog = new AuthLog([
             'ip_address' => $ip,

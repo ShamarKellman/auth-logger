@@ -1,11 +1,11 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Notifications;
+namespace ShamarKellman\AuthLogger\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
-use Shamarkellman\AuthLogger\Models\AuthLog;
+use ShamarKellman\AuthLogger\Models\AuthLog;
 
 class FailedSigninAttempts extends Notification
 {
@@ -31,9 +31,9 @@ class FailedSigninAttempts extends Notification
      * @param  mixed  $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
-        return ['mail'];
+        return $notifiable->notifyAuthenticationLogVia();
     }
 
     /**
@@ -42,7 +42,7 @@ class FailedSigninAttempts extends Notification
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
             ->subject(trans('auth-logger::messages.failed-subject'))

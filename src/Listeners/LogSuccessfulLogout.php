@@ -1,14 +1,12 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Listeners;
+namespace ShamarKellman\AuthLogger\Listeners;
 
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Http\Request;
-
-
-use Shamarkellman\AuthLogger\Location\Location;
-use Shamarkellman\AuthLogger\Models\AuthLog;
+use ShamarKellman\AuthLogger\Facades\Location;
+use ShamarKellman\AuthLogger\Models\AuthLog;
 
 class LogSuccessfulLogout
 {
@@ -32,16 +30,15 @@ class LogSuccessfulLogout
      *
      * @param Logout $event
      * @return void
-     * @throws \Shamarkellman\AuthLogger\Exceptions\DriverDoesNotExistException
+     * @throws \ShamarKellman\AuthLogger\Exceptions\DriverDoesNotExistException
      */
-    public function handle(Logout $event)
+    public function handle(Logout $event): void
     {
         $user = $event->user;
         if(isset($user)) {
             $ip = $this->request->ip();
 
-            $location = new Location();
-            $position = $location->get($ip);
+            $position = Location::get($ip);
             $country = $position->countryName ?? optional($position)->countryCode ?? "Unknown";
 
             $userAgent = $this->request->userAgent();

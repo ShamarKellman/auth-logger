@@ -1,12 +1,14 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Location\Drivers;
+namespace ShamarKellman\AuthLogger\Location\Drivers;
 
 use Illuminate\Support\Fluent;
-use Shamarkellman\AuthLogger\Location\Position;
+use ShamarKellman\AuthLogger\Location\Position;
 
 abstract class Driver
 {
+    public const CURL_MAX_TIME = 2;
+    public const CURL_CONNECT_TIMEOUT = 2;
     /**
      * The fallback driver.
      *
@@ -19,7 +21,7 @@ abstract class Driver
      *
      * @param Driver $handler
      */
-    public function fallback(Driver $handler)
+    public function fallback(Driver $handler): void
     {
         if (is_null($this->fallback)) {
             $this->fallback = $handler;
@@ -31,55 +33,72 @@ abstract class Driver
     /**
      * Handle the driver request.
      *
-     * @param string $ip
+     * @param  string  $ip
      *
      * @return Position|bool
      */
-    public function get($ip)
+    public function get(string $ip)
     {
         $location = $this->process($ip);
 
-        if (!$location && $this->fallback) {
-            $location = $this->fallback->get($ip);
-        }
+        $position = new Position();
 
-        if ($location instanceof Fluent) {
+        if ($location instanceof Fluent && $this->fluentDataIsNotEmpty($location)) {
             $position = $this->hydrate(new Position(), $location);
 
+            $position->ip = $ip;
             $position->driver = get_class($this);
+        }
 
+        if (! $position->isEmpty()) {
             return $position;
         }
 
-        return false;
+        return $this->fallback ? $this->fallback->get($ip) : false;
+    }
+
+    /**
+     * Determine if the given fluent data is not empty.
+     *
+     * @param Fluent $data
+     *
+     * @return bool
+     */
+    protected function fluentDataIsNotEmpty(Fluent $data): bool
+    {
+        return ! empty(array_filter($data->getAttributes()));
     }
 
     /**
      * Returns url content as string.
      *
-     * @param string $url
+     * @param  string  $url
      *
      * @return mixed
      */
-    protected function getUrlContent($url)
+    protected function getUrlContent(string $url)
     {
-        $timeout = 5;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        $urlContent = curl_exec($ch);
-        curl_close($ch);
+        $session = curl_init();
 
-        return $urlContent;
+        curl_setopt($session, CURLOPT_URL, $url);
+        curl_setopt($session, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($session, CURLOPT_TIMEOUT, static::CURL_MAX_TIME);
+        curl_setopt($session, CURLOPT_CONNECTTIMEOUT, static::CURL_CONNECT_TIMEOUT);
+
+        $content = curl_exec($session);
+
+        curl_close($session);
+
+        return $content;
     }
 
     /**
      * Returns the URL to use for querying the current driver.
      *
+     * @param $ip
      * @return string
      */
-    abstract protected function url();
+    abstract protected function url(string $ip): string;
 
     /**
      * Hydrates the position with the given location
@@ -90,14 +109,14 @@ abstract class Driver
      *
      * @return Position
      */
-    abstract protected function hydrate(Position $position, Fluent $location);
+    abstract protected function hydrate(Position $position, Fluent $location): Position;
 
     /**
      * Process the specified driver.
      *
-     * @param string $ip
+     * @param  string  $ip
      *
      * @return Fluent|bool
      */
-    abstract protected function process($ip);
+    abstract protected function process(string $ip);
 }

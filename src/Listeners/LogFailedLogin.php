@@ -1,13 +1,13 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Listeners;
+namespace ShamarKellman\AuthLogger\Listeners;
 
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Http\Request;
-use Shamarkellman\AuthLogger\Location\Location;
-use Shamarkellman\AuthLogger\Models\AuthLog;
-use Shamarkellman\AuthLogger\Notifications\FailedSigninAttempts;
+use ShamarKellman\AuthLogger\Facades\Location;
+use ShamarKellman\AuthLogger\Models\AuthLog;
+use ShamarKellman\AuthLogger\Notifications\FailedSigninAttempts;
 
 class LogFailedLogin
 {
@@ -31,16 +31,15 @@ class LogFailedLogin
      *
      * @param Failed $event
      * @return void
-     * @throws \Shamarkellman\AuthLogger\Exceptions\DriverDoesNotExistException
+     * @throws \ShamarKellman\AuthLogger\Exceptions\DriverDoesNotExistException
      */
-    public function handle(Failed $event)
+    public function handle(Failed $event): void
     {
         $user = $event->user;
         $ip = $this->request->ip();
         $userAgent = $this->request->userAgent();
 
-        $location = new Location();
-        $position = $location->get($ip);
+        $position = Location::get($ip);
         $country = $position->countryName ?? optional($position)->countryCode ?? "Unknown";
 
         $authLog = new AuthLog([
@@ -51,19 +50,15 @@ class LogFailedLogin
             'event_type' => "FAILED LOGIN",
         ]);
 
-        if($user) {
-            $user->authentications()->save($authLog);
+        $user->authentications()->save($authLog);
 
-            $attempts = $user->authentications()->where('event_type', 'FAILED LOGIN')
-                ->where('created_at', '<', Carbon::now()->toDateTimeString())
-                ->where('created_at', '>', Carbon::now()->subMinutes(config('auth-logger.failed_count_range', 10))->toDateTimeString())
-                ->count();
+        $attempts = $user->authentications()->where('event_type', 'FAILED LOGIN')
+            ->where('created_at', '<', Carbon::now()->toDateTimeString())
+            ->where('created_at', '>', Carbon::now()->subMinutes(config('auth-logger.failed_count_range', 10))->toDateTimeString())
+            ->count();
 
-            if ($attempts >= config('auth-logger.number_of_attempts', 5) && config('auth-logger.notify')) {
-                $user->notify(new FailedSigninAttempts($authLog));
-            }
-        } else {
-            $authLog->save();
+        if ($attempts >= config('auth-logger.number_of_attempts', 5) && config('auth-logger.notify')) {
+            $user->notify(new FailedSigninAttempts($authLog));
         }
     }
 }

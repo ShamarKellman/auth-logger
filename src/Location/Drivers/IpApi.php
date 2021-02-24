@@ -2,17 +2,18 @@
 
 namespace ShamarKellman\AuthLogger\Location\Drivers;
 
+use Exception;
 use Illuminate\Support\Fluent;
 use ShamarKellman\AuthLogger\Location\Position;
 
-class FreeGeoIp extends Driver
+class IpApi extends Driver
 {
     /**
      * {@inheritdoc}
      */
     protected function url($ip): string
     {
-        return "http://freegeoip.net/json/{$ip}";
+        return "http://ip-api.com/json/$ip";
     }
 
     /**
@@ -20,14 +21,15 @@ class FreeGeoIp extends Driver
      */
     protected function hydrate(Position $position, Fluent $location): Position
     {
-        $position->countryCode = $location->country_code;
-        $position->regionName = $location->region_name;
+        $position->countryName = $location->country;
+        $position->countryCode = $location->countryCode;
+        $position->regionCode = $location->region;
+        $position->regionName = $location->regionName;
         $position->cityName = $location->city;
-        $position->zipCode = $location->zip_code;
-        $position->latitude = (string) $location->latitude;
-        $position->longitude = (string) $location->longitude;
-        $position->metroCode = (string) $location->metro_code;
-        $position->areaCode = $location->area_code;
+        $position->zipCode = $location->zip;
+        $position->latitude = (string) $location->lat;
+        $position->longitude = (string) $location->lon;
+        $position->areaCode = $location->region;
 
         return $position;
     }
@@ -35,13 +37,13 @@ class FreeGeoIp extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function process(string $ip)
+    protected function process($ip)
     {
         try {
             $response = json_decode($this->getUrlContent($this->url($ip)), true);
 
             return new Fluent($response);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return false;
         }
     }

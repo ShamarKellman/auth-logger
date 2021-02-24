@@ -1,13 +1,13 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Listeners;
+namespace ShamarKellman\AuthLogger\Listeners;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Shamarkellman\AuthLogger\Location\Location;
-use Shamarkellman\AuthLogger\Models\AuthLog;
-use Shamarkellman\AuthLogger\Notifications\SigninFromNewDevice;
+use ShamarKellman\AuthLogger\Facades\Location;
+use ShamarKellman\AuthLogger\Models\AuthLog;
+use ShamarKellman\AuthLogger\Notifications\SigninFromNewDevice;
 
 class LogSuccessfulLogin
 {
@@ -31,16 +31,15 @@ class LogSuccessfulLogin
      *
      * @param  Login $event
      * @return void
-     * @throws \Shamarkellman\AuthLogger\Exceptions\DriverDoesNotExistException
+     * @throws \ShamarKellman\AuthLogger\Exceptions\DriverDoesNotExistException
      */
-    public function handle(Login $event)
+    public function handle(Login $event): void
     {
         $user = $event->user;
         $ip = $this->request->ip();
         $userAgent = $this->request->userAgent();
 
-        $location = new Location();
-        $position = $location->get($ip);
+        $position = Location::get($ip);
         $country = $position->countryName ?? optional($position)->countryCode ?? "Unknown";
 
         $known = $user->authentications()->whereIpAddress($ip)->whereUserAgent($userAgent)->first();

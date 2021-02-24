@@ -1,24 +1,24 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Location\Drivers;
+namespace ShamarKellman\AuthLogger\Location\Drivers;
 
 use Illuminate\Support\Fluent;
-use Shamarkellman\AuthLogger\Location\Position;
+use ShamarKellman\AuthLogger\Location\Position;
 
 class IpInfo extends Driver
 {
     /**
      * {@inheritdoc}
      */
-    protected function url()
+    protected function url($ip): string
     {
-        return 'https://ipinfo.io/';
+        return "https://ipinfo.io/{$ip}";
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function hydrate(Position $position, Fluent $location)
+    protected function hydrate(Position $position, Fluent $location): Position
     {
         $position->countryCode = $location->country;
         $position->regionName = $location->region;
@@ -43,10 +43,10 @@ class IpInfo extends Driver
     /**
      * {@inheritdoc}
      */
-    protected function process($ip)
+    protected function process(string $ip)
     {
         try {
-            $response = json_decode($this->getUrlContent($this->url().$ip));
+            $response = json_decode($this->getUrlContent($this->url($ip)), true);
 
             return new Fluent($response);
         } catch (\Exception $e) {

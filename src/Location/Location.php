@@ -1,12 +1,20 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Location;
+namespace ShamarKellman\AuthLogger\Location;
 
-use Shamarkellman\AuthLogger\Exceptions\DriverDoesNotExistException;
-use Shamarkellman\AuthLogger\Location\Drivers\Driver;
+use Illuminate\Contracts\Config\Repository;
+use ShamarKellman\AuthLogger\Exceptions\DriverDoesNotExistException;
+use ShamarKellman\AuthLogger\Location\Drivers\Driver;
 
 class Location
 {
+    /**
+     * The application configuration.
+     *
+     * @var Repository
+     */
+    protected $config;
+
     /**
      * The session key.
      *
@@ -24,19 +32,21 @@ class Location
     /**
      * Constructor.
      *
+     * @param  Repository  $config
      * @throws DriverDoesNotExistException
      */
-    public function __construct()
+    public function __construct(Repository $config)
     {
+        $this->config = $config;
         $this->setDefaultDriver();
     }
 
     /**
      * Creates the selected driver instance and sets the driver property.
      *
-     * @param Driver $driver
+     * @param Driver|mixed $driver
      */
-    public function setDriver(Driver $driver)
+    public function setDriver(Driver $driver): void
     {
         $this->driver = $driver;
     }
@@ -46,28 +56,25 @@ class Location
      *
      * @throws DriverDoesNotExistException
      */
-    public function setDefaultDriver()
+    public function setDefaultDriver(): void
     {
-        // Retrieve the default driver.
         $driver = $this->getDriver($this->getDefaultDriver());
 
         foreach($this->getDriverFallbacks() as $fallback) {
-            // We'll add each fallback to our responsibility chain.
             $driver->fallback($this->getDriver($fallback));
         }
 
-        // Finally, set the driver.
         $this->setDriver($driver);
     }
 
     /**
      * Sets the location session key.
      *
-     * @param string $key
+     * @param  string  $key
      *
      * @return Location
      */
-    public function setSessionKey($key)
+    public function setSessionKey(string $key): Location
     {
         $this->key = $key;
 
@@ -88,10 +95,7 @@ class Location
         }
 
         if ($location = $this->driver->get($ip ?: $this->getClientIP())) {
-            // We'll store the location inside of our session
-            // so it isn't retrieved on the next request.
             session([$this->key => $location]);
-
             return $location;
         }
 
@@ -104,7 +108,7 @@ class Location
      *
      * @return string
      */
-    protected function getClientIP()
+    protected function getClientIP(): string
     {
         return $this->localHostTesting() ? $this->getLocalHostTestingIp() : request()->ip();
     }
@@ -114,7 +118,7 @@ class Location
      *
      * @return bool
      */
-    protected function localHostTesting()
+    protected function localHostTesting(): bool
     {
         return config('auth-logger.testing.enabled', false);
     }
@@ -124,7 +128,7 @@ class Location
      *
      * @return string
      */
-    protected function getLocalHostTestingIp()
+    protected function getLocalHostTestingIp(): string
     {
         return config('auth-logger.testing.ip', '66.102.0.0');
     }
@@ -134,7 +138,7 @@ class Location
      *
      * @return array
      */
-    protected function getDriverFallbacks()
+    protected function getDriverFallbacks(): array
     {
         return config('auth-logger.fallbacks', []);
     }
@@ -142,9 +146,9 @@ class Location
     /**
      * Returns the selected driver
      *
-     * @return \Illuminate\Support\Facades\Config
+     * @return string
      */
-    protected function getDefaultDriver()
+    protected function getDefaultDriver(): string
     {
         return config('auth-logger.driver');
     }
@@ -152,13 +156,13 @@ class Location
     /**
      * Returns the specified driver.
      *
-     * @param string $driver
+     * @param  string  $driver
      *
      * @return Driver
      *
      * @throws DriverDoesNotExistException
      */
-    protected function getDriver($driver)
+    protected function getDriver(string $driver): Driver
     {
         if (class_exists($driver)) {
             return new $driver();

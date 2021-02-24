@@ -1,7 +1,8 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Listeners;
+namespace ShamarKellman\AuthLogger\Listeners;
 
+use Illuminate\Auth\Events\Attempting;
 
 class LogAuthenticationAttempt
 {
@@ -18,10 +19,10 @@ class LogAuthenticationAttempt
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  Attempting  $event
      * @return void
      */
-    public function handle($event)
+    public function handle(Attempting $event): void
     {
         //
     }

@@ -1,7 +1,9 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Listeners;
+namespace ShamarKellman\AuthLogger\Listeners;
 
+
+use Illuminate\Auth\Events\Authenticated;
 
 class LogAuthenticated
 {
@@ -18,10 +20,10 @@ class LogAuthenticated
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  Authenticated  $event
      * @return void
      */
-    public function handle($event)
+    public function handle(Authenticated $event): void
     {
         //
     }

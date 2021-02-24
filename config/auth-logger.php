@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Notify New Device
@@ -44,7 +43,7 @@ return [
     |
     */
 
-    'driver' => Shamarkellman\AuthLogger\Location\Drivers\FreeGeoIp::class,
+    'driver' => ShamarKellman\AuthLogger\Location\Drivers\FreeGeoIp::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -59,7 +58,7 @@ return [
     */
 
     'fallbacks' => [
-        Shamarkellman\AuthLogger\Location\Drivers\IpInfo::class,
+        ShamarKellman\AuthLogger\Location\Drivers\IpInfo::class,
     ],
 
     /*

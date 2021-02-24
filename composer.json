@@ -1,40 +1,60 @@
 {
     "name": "shamarkellman/auth-logger",
-    "description": "Log all authentication events performed with an application",
-    "type": "library",
+    "description": "auth-logger",
+    "keywords": [
+        "shamarkellman",
+        "auth-logger"
+    ],
+    "homepage": "https://github.com/shamarkellman/auth-logger",
     "license": "MIT",
     "authors": [
         {
             "name": "Shamar Kellman",
-            "email": "shamarkellman@hotmail.com"
+            "email": "shamarkellman@hotmail.com",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": ">=7.0",
-        "illuminate/auth": "~5.5",
-        "illuminate/bus": "~5.5",
-        "illuminate/console": "~5.5",
-        "illuminate/contracts": "~5.5",
-        "illuminate/database": "~5.5",
-        "illuminate/http": "~5.5",
-        "illuminate/notifications": "~5.5",
-        "illuminate/support": "~5.5"
+        "php": ">=7.2.5|^8.0",
+        "spatie/laravel-package-tools": "^1.1",
+        "illuminate/contracts": "^6.0|^7.0|^8.0",
+        "illuminate/support": "^6.0|^7.0|8.0",
+        "dasprid/enum": "1.0.3",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.3"
     },
     "autoload": {
         "psr-4": {
-            "Shamarkellman\\AuthLogger\\": "src/"
+            "ShamarKellman\\AuthLogger\\": "src",
+            "ShamarKellman\\AuthLogger\\Database\\Factories\\": "database/factories"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ShamarKellman\\AuthLogger\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --colors=always",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Shamarkellman\\AuthLogger\\Providers\\AuthLoggerServiceProvider"
+                "ShamarKellman\\AuthLogger\\AuthLoggerServiceProvider"
             ],
             "aliases": {
-                "SimplePackage": "Shamarkellman\\AuthLogger\\Facades\\AuthLoggerFacade"
+                "AuthLogger": "AuthLogger"
             }
         }
     },
-    "prefer-stable": true,
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

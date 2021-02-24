@@ -1,16 +1,23 @@
 <?php
 
-namespace Shamarkellman\AuthLogger\Mappers;
+namespace ShamarKellman\AuthLogger\Mappers;
 
-
-use Shamarkellman\AuthLogger\Listeners\LogAuthenticated;
-use Shamarkellman\AuthLogger\Listeners\LogAuthenticationAttempt;
-use Shamarkellman\AuthLogger\Listeners\LogFailedLogin;
-use Shamarkellman\AuthLogger\Listeners\LogLockout;
-use Shamarkellman\AuthLogger\Listeners\LogPasswordReset;
-use Shamarkellman\AuthLogger\Listeners\LogRegisteredUser;
-use Shamarkellman\AuthLogger\Listeners\LogSuccessfulLogin;
-use Shamarkellman\AuthLogger\Listeners\LogSuccessfulLogout;
+use ShamarKellman\AuthLogger\Listeners\LogAuthenticated;
+use ShamarKellman\AuthLogger\Listeners\LogAuthenticationAttempt;
+use ShamarKellman\AuthLogger\Listeners\LogFailedLogin;
+use ShamarKellman\AuthLogger\Listeners\LogLockout;
+use ShamarKellman\AuthLogger\Listeners\LogPasswordReset;
+use ShamarKellman\AuthLogger\Listeners\LogRegisteredUser;
+use ShamarKellman\AuthLogger\Listeners\LogSuccessfulLogin;
+use ShamarKellman\AuthLogger\Listeners\LogSuccessfulLogout;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Attempting;
+use Illuminate\Auth\Events\Authenticated;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\PasswordReset;
 
 trait EventMapper
 {
@@ -20,35 +27,35 @@ trait EventMapper
      * @var array
      */
     protected $events = [
-        'Illuminate\Auth\Events\Registered' => [
+        Registered::class => [
             LogRegisteredUser::class,
         ],
 
-        'Illuminate\Auth\Events\Attempting' => [
+        Attempting::class => [
             LogAuthenticationAttempt::class,
         ],
 
-        'Illuminate\Auth\Events\Authenticated' => [
+        Authenticated::class => [
             LogAuthenticated::class,
         ],
 
-        'Illuminate\Auth\Events\Login' => [
+        Login::class => [
             LogSuccessfulLogin::class,
         ],
 
-        'Illuminate\Auth\Events\Failed' => [
+        Failed::class => [
             LogFailedLogin::class,
         ],
 
-        'Illuminate\Auth\Events\Logout' => [
+        Logout::class => [
             LogSuccessfulLogout::class,
         ],
 
-        'Illuminate\Auth\Events\Lockout' => [
+        Lockout::class => [
             LogLockout::class,
         ],
 
-        'Illuminate\Auth\Events\PasswordReset' => [
+        PasswordReset::class => [
             LogPasswordReset::class,
         ],
     ];
