@@ -8,7 +8,8 @@ use ShamarKellman\AuthLogger\Traits\AuthLoggable;
 
 class User extends Authenticatable
 {
-    use AuthLoggable, Notifiable;
+    use AuthLoggable;
+    use Notifiable;
 
     protected $guarded = [];
 }

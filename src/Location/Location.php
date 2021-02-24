@@ -60,7 +60,7 @@ class Location
     {
         $driver = $this->getDriver($this->getDefaultDriver());
 
-        foreach($this->getDriverFallbacks() as $fallback) {
+        foreach ($this->getDriverFallbacks() as $fallback) {
             $driver->fallback($this->getDriver($fallback));
         }
 
@@ -96,6 +96,7 @@ class Location
 
         if ($location = $this->driver->get($ip ?: $this->getClientIP())) {
             session([$this->key => $location]);
+
             return $location;
         }
 

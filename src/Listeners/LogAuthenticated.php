@@ -2,7 +2,6 @@
 
 namespace ShamarKellman\AuthLogger\Listeners;
 
-
 use Illuminate\Auth\Events\Authenticated;
 
 class LogAuthenticated

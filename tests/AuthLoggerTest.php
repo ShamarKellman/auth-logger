@@ -20,7 +20,8 @@ use ShamarKellman\AuthLogger\Tests\Models\User;
 
 class AuthLoggerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     public function testAuthLoggerTableCreated(): void
     {

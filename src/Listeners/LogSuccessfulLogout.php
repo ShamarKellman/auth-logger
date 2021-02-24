@@ -35,7 +35,7 @@ class LogSuccessfulLogout
     public function handle(Logout $event): void
     {
         $user = $event->user;
-        if(isset($user)) {
+        if (isset($user)) {
             $ip = $this->request->ip();
 
             $position = Location::get($ip);

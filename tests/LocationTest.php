@@ -3,10 +3,10 @@
 namespace ShamarKellman\AuthLogger\Tests;
 
 use Illuminate\Support\Fluent;
+use Mockery as m;
 use ShamarKellman\AuthLogger\Exceptions\DriverDoesNotExistException;
 use ShamarKellman\AuthLogger\Facades\Location;
 use ShamarKellman\AuthLogger\Location\Drivers\Driver;
-use Mockery as m;
 use ShamarKellman\AuthLogger\Location\Drivers\GeoPlugin;
 use ShamarKellman\AuthLogger\Location\Drivers\IpApi;
 use ShamarKellman\AuthLogger\Location\Drivers\IpInfo;

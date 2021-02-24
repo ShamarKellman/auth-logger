@@ -2,6 +2,14 @@
 
 namespace ShamarKellman\AuthLogger\Mappers;
 
+use Illuminate\Auth\Events\Attempting;
+use Illuminate\Auth\Events\Authenticated;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Auth\Events\Registered;
 use ShamarKellman\AuthLogger\Listeners\LogAuthenticated;
 use ShamarKellman\AuthLogger\Listeners\LogAuthenticationAttempt;
 use ShamarKellman\AuthLogger\Listeners\LogFailedLogin;
@@ -10,14 +18,6 @@ use ShamarKellman\AuthLogger\Listeners\LogPasswordReset;
 use ShamarKellman\AuthLogger\Listeners\LogRegisteredUser;
 use ShamarKellman\AuthLogger\Listeners\LogSuccessfulLogin;
 use ShamarKellman\AuthLogger\Listeners\LogSuccessfulLogout;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Auth\Events\Attempting;
-use Illuminate\Auth\Events\Authenticated;
-use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Failed;
-use Illuminate\Auth\Events\Logout;
-use Illuminate\Auth\Events\Lockout;
-use Illuminate\Auth\Events\PasswordReset;
 
 trait EventMapper
 {

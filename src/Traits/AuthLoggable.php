@@ -39,7 +39,7 @@ trait AuthLoggable
             ->where('authenticatable_type', $this->getMorphClass())
             ->where('event_type', EventType::LOGIN)
             ->latest('login_at')
-            ->take(1)
+            ->take(1),
         ])->withCasts(['last_login_at' => 'datetime']);
     }
 
@@ -55,7 +55,7 @@ trait AuthLoggable
             ->where('authenticatable_type', $this->getMorphClass())
             ->where('event_type', EventType::LOGIN)
             ->latest('login_at')
-            ->take(1)
+            ->take(1),
         ]);
     }
 
@@ -71,7 +71,7 @@ trait AuthLoggable
             ->where('authenticatable_type', $this->getMorphClass())
             ->where('event_type', EventType::LOGIN)
             ->latest('login_at')
-            ->take(1)
+            ->take(1),
         ]);
     }
 
@@ -88,7 +88,7 @@ trait AuthLoggable
             ->where('event_type', EventType::LOGIN)
             ->latest('login_at')
             ->skip(1)
-            ->take(1)
+            ->take(1),
         ])->withCasts(['previous_login_at' => 'datetime']);
     }
 
@@ -105,7 +105,7 @@ trait AuthLoggable
             ->where('event_type', EventType::LOGIN)
             ->orderBy('login_at', 'desc')
             ->skip(1)
-            ->take(1)
+            ->take(1),
         ]);
     }
 }
