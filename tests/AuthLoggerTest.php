@@ -10,6 +10,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use ShamarKellman\AuthLogger\Enums\EventType;
@@ -101,6 +102,7 @@ class AuthLoggerTest extends TestCase
 
     public function testFailedLoginNotificationNoSentWhenDisabled(): void
     {
+        Artisan::call('config:clear');
         Notification::fake();
 
         $user = User::create(['name' => 'John Doe', 'email' => 'johndoe@mail.com', 'password' => bcrypt('password')]);
@@ -111,10 +113,12 @@ class AuthLoggerTest extends TestCase
 
         self::assertEquals(6, AuthLog::where('event_type', EventType::FAILED_LOGIN)->count());
         Notification::assertNotSentTo($user, FailedSigninAttempts::class);
+        Artisan::call('config:clear');
     }
 
     public function testFailedLoginNotificationSent(): void
     {
+        Artisan::call('config:clear');
         $this->withoutExceptionHandling();
         Notification::fake();
         config()->set('auth-logger.notify', true);
@@ -129,6 +133,7 @@ class AuthLoggerTest extends TestCase
         Notification::assertSentTo($user, FailedSigninAttempts::class);
 
         config()->set('auth-logger.notify', false);
+        Artisan::call('config:clear');
     }
 
     public function testUserRegisteredIsLogged(): void
