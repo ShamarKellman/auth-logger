@@ -12,7 +12,7 @@ Laravel package to log all authentication events.
 Requirements
 ============
 
-* PHP >= 7.3
+* PHP >= 7.4
 * Laravel 7.x, 8.x
 
 Installation
